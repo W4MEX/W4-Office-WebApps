@@ -1,0 +1,33 @@
+// SPDX-FileCopyrightText: 2026 W4
+// SPDX-License-Identifier: AGPL-3.0-only
+// Inherit upstream behaviour, including slideshow and accessible colour modes.
+@import "../../../euro-office/assets/less/theme.less";
+@nc-primary: #1463e5;
+@nc-primary-dark: #104eb5;
+@nc-primary-light: #4388f6;
+@eo-app-accent-document: #1463e5;
+@eo-app-accent-spreadsheet: #1463e5;
+@eo-app-accent-presentation: #1463e5;
+@eo-app-accent-pdf: #1463e5;
+@eo-app-accent-drawing: #1463e5;
+@theme-logo-light-url: '@{common-image-const-path}/header/w4-office-blue.svg';
+@theme-logo-dark-url: '@{common-image-const-path}/header/w4-office-white.svg';
+@theme-about-logo-url: '@{common-image-const-path}/about/w4-office-blue.svg';
+@theme-about-logo-dark-url: '@{common-image-const-path}/about/w4-office-white.svg';
+
+// Original header supported a wordmark. Keep its height and restore text width.
+:root body[data-editor-type] .extra #header-logo {
+  i { width: 86px; height: 24px; background-size: contain; background-repeat: no-repeat;
+      background-image: ~"url('@{theme-logo-light-url}')"; }
+}
+:root body[data-editor-type].theme-light,
+:root body[data-editor-type].theme-classic-light,
+:root body[data-editor-type].theme-dark,
+:root body[data-editor-type].theme-contrast-dark,
+:root body[data-editor-type].theme-night {
+  .extra #header-logo i { background-image: ~"url('@{theme-logo-dark-url}')"; }
+}
+.about-dlg .asc-about-office:before {
+  content: ~"url('@{theme-about-logo-url}')";
+  .theme-type-dark & { content: ~"url('@{theme-about-logo-dark-url}')"; }
+}
