@@ -1,0 +1,21 @@
+{
+  "company_name": "W4",
+  "publisher_name": "W4",
+  "publisher_url": "https://github.com/W4MEX",
+  "publisher_address": "",
+  "publisher_phone": "",
+  "sales_email": "",
+  "support_email": "",
+  "support_url": "https://github.com/W4MEX",
+  "help_url": "https://github.com/W4MEX",
+  "suggest_url": "https://github.com/W4MEX",
+  "app_title": "W4 Office",
+  "mobile_logo_light": "w4-office-blue.svg",
+  "mobile_logo_dark": "w4-office-white.svg",
+  "about_logo_light": "w4-office-blue.svg",
+  "about_logo_dark": "w4-office-white.svg",
+  "forms_logo_light": "w4-office-blue.svg",
+  "forms_logo_dark": "w4-office-white.svg",
+  "loader_logo": "w4-office-blue.svg",
+  "loader_logo_dark": "w4-office-white.svg"
+}
