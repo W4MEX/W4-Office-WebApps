@@ -1,242 +1,58 @@
-[![License](https://img.shields.io/badge/License-GNU%20AGPL%20V3-green.svg?style=flat)](https://www.gnu.org/licenses/agpl-3.0.en.html)
+# W4 Office WebApps
 
-## web-apps
+W4 Office WebApps provides the editor interface shared by
+[W4 Office Desktop](https://github.com/W4MEX/W4-OfficeDesktop) and
+[W4 Office Server](https://github.com/W4MEX/W4-OfficeServer).
+It contains the interfaces for documents, spreadsheets, presentations, PDFs,
+forms and diagrams, including mobile layouts for supported editors.
 
-The frontend for [Euro-Office Document Server][2] and [Euro-Office Desktop Editors](https://github.com/Euro-Office/DesktopEditors). Builds the program interface and allows the user create, edit, save and export text documents, spreadsheets, and presentations.
+Download the Windows installer and portable USB edition from
+[W4 Office Desktop Releases](https://github.com/W4MEX/W4-OfficeDesktop/releases).
 
-## Previous versions
+## W4 Office theme
 
-Until 2019-10-23 the repository was called web-apps-pro.
+The [w4-office theme](theme/w4-office/README.md) defines the W4 Office name,
+publisher, colors and logos. Keep W4-specific styling in this theme so it
+can be reviewed separately when shared editor code is updated.
 
-## Project information
+- [Theme metadata](theme/w4-office/meta/config.json) defines the product
+  name, publisher, logo filenames and help links.
+- [Theme artwork](theme/w4-office/assets/img) contains logos for the editors
+  and the About dialog.
+- [Theme styles](theme/w4-office/assets/less) contains LESS variables and
+  overrides. See the [theme styling guide](docs/theme-less-overrides.md)
+  for guidance on where to add rules.
 
-Official website: [https://github.com/Euro-Office](https://github.com/Euro-Office "https://github.com/Euro-Office")
+## Build the editors
 
-Code repository: [https://github.com/Euro-Office/web-apps](https://github.com/Euro-Office/web-apps "https://github.com/Euro-Office/web-apps")
+Desktop and server builds use WebApps at the revision pinned by the parent
+repository. For an isolated WebApps build, use the Node environment described
+in the [build guide](build/README.md). Set the product version to match the
+parent build and its SDK, and select the W4 theme explicitly.
 
-## User feedback and support
-
-If you have any problems with or questions about [Euro-Office Document Server][2], please visit our official forum: [github.com/euro-office][1] or you can ask and answer Euro-Office development questions on [Stack Overflow][3].
-
-  [1]: https://github.com/Euro-Office
-  [2]: https://github.com/Euro-Office/DocumentServer
-
-## Translations
-
-The UI is translated on [Hosted Weblate](https://hosted.weblate.org/projects/euro-office/). See [docs/translations.md](docs/translations.md) for how to contribute.
-
-## Styling
-
-Styling is accomplished via LESS, there is the content set by Euro-Office. Before you do anything, please read the section under this about modifications.
-
-There are several hundred LESS files, organised in several folders:
-
-#### Common (shared)
-
-```shell
-apps/common/embed/resources/less/
-apps/common/forms/resources/less/
-apps/common/main/resources/less/
-apps/common/main/resources/mods/less/
-apps/common/mobile/resources/less/
+```sh
+git clone https://github.com/W4MEX/W4-Office-WebApps.git
+cd W4-Office-WebApps/build
+npm ci
+PRODUCT_VERSION=9.3.9 THEME=w4-office BUILD_ROOT="$PWD/../deploy" \
+  node scripts/build-pipeline.js
 ```
 
-Common is the most important and many of the others just import common.
-
-They use variables:
-
-`apps/common/main/resources/less/variables.less` <- majority seem to be shared from there.
-
-The variables seem to be a bit haphazard in approach. There is some structure, but not uniformly adhered to. The variables are used in other files, so the lack of structure is not so much an issue.
-
-Importing is via relative paths.
-
-#### Document Editor
-
-```shell
-apps/documenteditor/embed/resources/less/
-apps/documenteditor/forms/resources/less/
-apps/documenteditor/main/resources/less/
-apps/documenteditor/mobile/src/less/
-```
-
-#### Spreadsheet Editor
-
-```shell
-apps/spreadsheeteditor/main/resources/less/
-apps/spreadsheeteditor/mobile/src/less/
-```
-
-#### Presentation Editor
-
-```shell
-apps/presentationeditor/embed/resources/less/
-apps/presentationeditor/main/resources/less/
-apps/presentationeditor/mobile/src/less/
-```
-
-#### PDF Editor
-
-```shell
-apps/pdfeditor/main/resources/less/
-```
-
-
-#### Visio Editor
-
-```shell
-apps/visioeditor/main/resources/less/
-```
-
-
-Each directory has a range of LESS files broken down by area, eg slider, search, buttons etc - too many to list here, but should be helpful in finding the correct place to make style changes
-
-## Building
-
-### Full Build
-
-Run `docker compose` from the `euro-office/fork/build` directory:
-
-```bash
-# From euro-office/fork/build, enter the container:
-docker compose exec eo bash
-
-# Then inside the container:
-export BUILD_NUMBER=0 PRODUCT_VERSION=9.3.2 THEME=euro-office && cd /var/www/onlyoffice/web-apps-develop/build && node scripts/build-pipeline.js
-```
-
-### Environment Variables
-
-| Variable | Description |
-|----------|-------------|
-| `THEME` | Theme name to use (e.g., `euro-office`, `default`) |
-| `BUILD_NUMBER` | Build number for versioning |
-| `PRODUCT_VERSION` | Must match the SDK version (e.g., `9.3.2`) — mismatches cause a blank editor |
-| `BUILD_ROOT` | Output directory (default: `../deploy`) |
-
-## Style modifications
-## Building
-
-To build this project execute the following commands
-
-```shell
-cd build
-npm install
-PRODUCT_VERSION=9.3.2 BUILD_ROOT=/path/to/output THEME=euro-office node scripts/build-pipeline.js
-```
-
-### Building to specified directory
-
-A build directory can be specified via `BUILD_ROOT`:
-
-```shell
-BUILD_ROOT=/path/to/build PRODUCT_VERSION=9.3.2 THEME=euro-office node scripts/build-pipeline.js
-```
-
-
-
-Two new build-time variables were introduced to the code to remove hard-coded paths and make the build configuration more flexible:
-
-```shell
-BUILD_ROOT
-SRC_ROOT
-```
-
-#### `BUILD_ROOT`
-
-Several JSON files define build instructions and previously contained hard-coded relative paths, for example:
-
-```shell
-build/common.json
-build/presentationeditor.json
-build/documenteditor.json
-...
-```
-
-
-These paths have been replaced with the `$BUILD_ROOT` variable. During the build process, `$BUILD_ROOT` is resolved to the actual build root directory, allowing the same configuration to work regardless of where the project is built or deployed.
-
- #### `SRC_ROOT`
-
-Some HTML files include inline script replacements during the build (for example, `apps/api/documents/cache-scripts.html`). The referenced JavaScript paths were previously in `SRC_ROOT` relative to the file location in `BUILD_ROOT`.
-
-These paths have been updated to use the `@@SRC_ROOT@@` placeholder instead. At build time, this placeholder is replaced with the absolute source directory, ensuring that script references resolve correctly in all environments.
-
-
-
-### Building using a theme
-
-We want to make upstream updates as painless as possible. From the perspective of making modifications we have added theming capability to the office package.
-
-#### Theme folder structure
-
-Each theme is a self-contained folder under `theme/` at the web-apps root:
-
-```
-theme/euro-office/
-  meta/
-    config.json           # Brand values (company name, URLs, logo filenames)
-  assets/
-    img/header/           # Logo SVGs (copied to desktop + mobile resource dirs at build time)
-    less/                 # LESS variable overrides and CSS rule overrides
-```
-
-#### config.json
-
-Single source of truth for brand values used by **both desktop and mobile** editors. Contains company/publisher strings, logo filenames, help/support URLs, and the attribution line shown in the About dialog. Values flow into the built output two ways, depending on target:
-
-- **Desktop (webpack pipeline):** `build/theme.config.mjs` reads `config.json` into `themeMeta` and exposes values via `themeReplacements()` (token substitution of `{{PLACEHOLDER}}` strings e.g. `{{PUBLISHER_NAME}}`, `{{ATTRIBUTION}}`) and `themeDefines()` (webpack `DefinePlugin` constants).
-- **Mobile (webpack):** `build/theme.config.mjs` reads the file directly and exposes values as LESS `globalVars` (logo paths) and `DefinePlugin` constants (e.g. `__PUBLISHER_NAME__`) for the mobile webpack builds.
-
-Resolution priority for every field is: **environment variable > config.json > hardcoded default**. Unset or empty string values fall back to the default (desktop) or cause the row to be hidden in templates that guard on empty strings (e.g. the About dialog).
-
-```json
-{
-  "company_name": "Euro Office",
-  "publisher_name": "Euro Office",
-  "publisher_url": "https://github.com/Euro-Office",
-  "publisher_address": "",
-  "publisher_phone": "",
-  "sales_email": "",
-  "support_email": "",
-  "support_url": "https://github.com/Euro-Office",
-  "help_url": "https://github.com/Euro-Office",
-  "app_title": "Euro Office",
-  "attribution": "Euro-Office was based on ONLYOFFICE by Ascensio System SIA",
-  "mobile_logo_light": "eo_logo_light.svg",
-  "mobile_logo_dark": "eo_logo_dark.svg",
-  "forms_logo_light": "eo_logo_dark.svg",
-  "forms_logo_dark": "eo_logo_light.svg"
-}
-```
-
-To add a new field: add the key here, wire it in `build/theme.config.mjs` (`themeReplacements`/`themeDefines`/`themeGlobalVars`), then reference the resulting `{{TOKEN}}` or `__TOKEN__` from the view code.
-
-#### Build
-
-```shell
-THEME=euro-office PRODUCT_VERSION=9.3.2 BUILD_ROOT=/path/to/output node scripts/build-pipeline.js
-```
-
-The pipeline's `deploy-theme-images` step:
-1. Reads `config.json` via `build/theme.config.mjs` for brand token substitution
-2. Copies images to `apps/common/main/resources/img/` (desktop) and `apps/common/mobile/resources/img/` (mobile)
-3. LESS variable overrides are picked up from `assets/less/` at webpack compile time via `themeGlobalVars()`
-
-Token substitution (`{{PUBLISHER_NAME}}` etc.) and webpack `DefinePlugin` constants (`__PUBLISHER_NAME__`) are injected during the webpack build step.
-
-#### Creating a new theme
-
-1. Copy `theme/euro-office/` to `theme/yourtheme/`
-2. Edit `meta/config.json` with your brand values
-3. Replace logo SVGs in `assets/img/header/`
-4. Adjust LESS variables in `assets/less/theme.less`
-5. Build with `THEME=yourtheme PRODUCT_VERSION=9.3.2 BUILD_ROOT=/path/to/output node scripts/build-pipeline.js`
-
-#### LESS guidelines
-
-Use variables in `theme.less` as much as possible — this avoids duplicate CSS in the final output. Only use `overrides/` for rules that cannot be changed via variables. The overrides directory should mirror the structure of the main app for clarity.
-
-## License
-
-web-apps is released under an GNU AGPL v3.0 license. See the LICENSE file for more information.
+Replace `9.3.9` with the version used by the parent build. `BUILD_ROOT`
+sets the output directory, and `BUILD_NUMBER` can set the bundle build
+number. See the [pipeline overview](build/README.md) for the build phases
+and deployment checks.
+
+## Contribute
+
+Open an [issue in W4 Office WebApps](https://github.com/W4MEX/W4-Office-WebApps/issues)
+for editor or theme problems. Include the editor, the product version and
+whether the issue appeared in Desktop or Server. For translation changes,
+see the [translation guide](docs/translations.md).
+
+## License and credits
+
+WebApps is licensed under the GNU Affero General Public License v3. See
+[LICENSE.txt](LICENSE.txt), the [third-party notices](3DPARTY.md), and the
+[W4 theme notes](theme/w4-office/README.md) for artwork licensing and credits.
+The About dialog preserves the upstream attribution.
