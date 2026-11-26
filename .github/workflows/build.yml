@@ -1,5 +1,8 @@
 name: "Build"
 
+permissions:
+    contents: read
+
 on:
     workflow_dispatch:
     push:
@@ -7,26 +10,25 @@ on:
 jobs:
     build-apps:
         name: "Build web-apps"
-        runs-on: self-hosted
+        runs-on: ${{ github.repository == 'W4MEX/W4-Office-WebApps' && 'ubuntu-latest' || 'self-hosted' }}
         env:
-            NODE_VERSION: 20
-            PRODUCT_VERSION: 9.2.1
+            NODE_VERSION: ${{ github.repository == 'W4MEX/W4-Office-WebApps' && '24' || '20' }}
+            PRODUCT_VERSION: ${{ github.repository == 'W4MEX/W4-Office-WebApps' && '9.3.9' || '9.2.1' }}
         steps:
 
           - name: Checkout web-apps
             uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
             with:
-                repository: euro-office/web-apps
-                ref: ${{github.ref}}
                 path: 'web-apps'
+                persist-credentials: false
 
           - name: Checkout SDKJS
             uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
             with:
                 repository: euro-office/sdkjs
-                ref: ${{env.REF}}
                 path: 'sdkjs'
                 fetch-depth: '1'
+                persist-credentials: false
 
           - name: Use Node.js ${{ env.NODE_VERSION }}
             uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -36,7 +38,7 @@ jobs:
           - name: Install dependencies
             run: |
               cd web-apps/build
-              npm install
+              npm ci
 
           - name: Merge translations
             run: |
@@ -47,5 +49,13 @@ jobs:
             working-directory: web-apps/build
             env:
                 BUILD_ROOT: ${{ github.workspace }}/web-apps/deploy
-                THEME: euro-office
+                THEME: ${{ github.repository == 'W4MEX/W4-Office-WebApps' && 'w4-office' || 'euro-office' }}
             run: node scripts/build-pipeline.js
+
+          - name: Check the compiled W4 editor titles
+            if: github.repository == 'W4MEX/W4-Office-WebApps'
+            working-directory: web-apps/deploy/web-apps/apps
+            run: |
+              for editor in documenteditor spreadsheeteditor presentationeditor pdfeditor visioeditor; do
+                grep -Fq '<title>W4 Office' "$editor/main/index.html" || exit 1
+              done
